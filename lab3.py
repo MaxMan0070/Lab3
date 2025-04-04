@@ -60,12 +60,45 @@ if not os.path.exists(PATH_TO_FILES) or not os.listdir(PATH_TO_FILES):
     download_all_states()
 dataframe = load_to_frame()
 
+
+area_names = {
+    1: "Вінницька",
+    2: "Волинська",
+    3: "Дніпропетровська",
+    4: "Донецька",
+    5: "Житомирська",
+    6: "Закарпатська",
+    7: "Запорізька",
+    8: "Івано-Франківська",
+    9: "Київська",
+    10: "Кіровоградська",
+    11: "Луганська",
+    12: "Львівська",
+    13: "Миколаївська",
+    14: "Одеська",
+    15: "Полтавська",
+    16: "Рівненська",
+    17: "Сумська",
+    18: "Тернопільська",
+    19: "Харківська",
+    20: "Херсонська",
+    21: "Хмельницька",
+    22: "Черкаська",
+    23: "Чернівецька",
+    24: "Чернігівська",
+    25: "Республіка Крим"
+}
+
+
 def replace_indexes(df):
     df['Area'] = df['Area'].replace({1:22, 2:24, 3:23, 4:25, 5:3, 6:4, 7:8, 8:19, 9:20, 10:21, 11:9, 13:10, 14:11, 15:12,
                                      16:13, 17:14, 18:15, 19:16, 21:17, 22:18, 23:6, 24:1, 25:2, 26:7, 27:5})
+    df['Area'] = df['Area'].map(area_names)
     return df
 
 dataframe = replace_indexes(dataframe)
+
+
 
 default_values = {
     "index_type": "VCI",
@@ -109,6 +142,7 @@ with col1:
     st.selectbox(
         "Виберіть область",
         options=areas,
+        index=areas.index(st.session_state.selected_area),
         key="selected_area"
     )
 
@@ -181,7 +215,7 @@ with col2:
 # області з усіма іншими областями за вказаний часовий інтервал. Продумайте 
 # вигляд цих графіків. 
     with tab2:
-        st.subheader(f"{st.session_state.index_type} для області {st.session_state.selected_area}")
+        st.subheader(f"{st.session_state.index_type} для {st.session_state.selected_area}")
         chart_data = filtered_df.pivot_table(
             index='Week',
             columns='Year',
@@ -202,7 +236,7 @@ with col2:
         )
 
         chart = alt.Chart(bar_data).mark_bar().encode(
-            x=alt.X('Area:O').title('Область'),
+            x=alt.X('Area:N').title('Область'),
             y=alt.Y(f'{st.session_state.index_type}:Q').title(f'{st.session_state.index_type} (середнє значення)'),
             color=alt.Color('Color:N', scale=None),
             tooltip=['Area', st.session_state.index_type]
