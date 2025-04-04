@@ -210,3 +210,4 @@ with col2:
         st.altair_chart(chart)
 
 # streamlit run lab3.py 
+#https://github.com/MaxMan0070/Lab3
